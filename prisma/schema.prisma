@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Tag {
+  id      Int      @id @default(autoincrement())
+  name     String   @unique
+  articles Article[] // Relation field
+}
+
+model Route {
+  id       Int       @id @default(autoincrement())
+  path     String    @unique
+  articles Article[] // One-to-many relationship with Article
+}
+
+model Article {
+  id          String    @id @default(uuid())
+  title       String
+  segment     String
+  meta        Json
+  content     String
+  date        DateTime
+  publisherId String?
+  tags        Tag[]     // Many-to-many relationship with Tag
+
+  // Foreign key to Route
+  routeId     Int
+  route       Route     @relation(fields: [routeId], references: [id])
+}
